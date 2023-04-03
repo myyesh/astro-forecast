@@ -1,7 +1,7 @@
 {
   "name": "react-weather-app",
   "version": "0.1.0",
-  "homepage": "https://gpkalyan.github.io/react_weather_gh",
+  "homepage": "https://gpkalyan.github.io/weather-react-app",
   "private": true,
   "dependencies": {
     "@iconscout/react-unicons": "^2.0.2",
