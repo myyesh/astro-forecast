@@ -1,15 +1,21 @@
 import { DateTime } from "luxon";
-
-const API_KEY = "YOUR_API_KEY";
-const BASE_URL = "https://api.openweathermap.org/data/2.5";
+import axios from "axios";
 
 // https://api.openweathermap.org/data/2.5/onecall?lat=48.8534&lon=2.3488&exclude=current,minutely,hourly,alerts&appid=1fa9ff4126d95b8db54f3897a208e91c&units=metric
 
-const getWeatherData = (infoType, searchParams) => {
-  const url = new URL(BASE_URL + "/" + infoType);
-  url.search = new URLSearchParams({ ...searchParams, appid: API_KEY });
-
-  return fetch(url).then((res) => res.json());
+const getWeatherData = async (infoType, searchParams) => {
+  const options = {
+    method: "GET",
+    url: "http://localhost:8000/weather",
+    params: { ...searchParams, infoType: infoType },
+  };
+  let res = await axios
+    .request(options)
+    .then((response) => response.data)
+    .catch((error) => {
+      console.error(error);
+    });
+  return res;
 };
 
 const formatCurrentWeather = (data) => {
@@ -45,6 +51,7 @@ const formatCurrentWeather = (data) => {
 };
 
 const formatForecastWeather = (data) => {
+  console.log("in forecast weather");
   let { timezone, daily, hourly } = data;
   daily = daily.slice(1, 6).map((d) => {
     return {
@@ -66,10 +73,12 @@ const formatForecastWeather = (data) => {
 };
 
 const getFormattedWeatherData = async (searchParams) => {
+  console.log(searchParams);
   const formattedCurrentWeather = await getWeatherData(
     "weather",
     searchParams
   ).then(formatCurrentWeather);
+  console.log(formattedCurrentWeather);
 
   const { lat, lon } = formattedCurrentWeather;
 
@@ -79,6 +88,7 @@ const getFormattedWeatherData = async (searchParams) => {
     exclude: "current,minutely,alerts",
     units: searchParams.units,
   }).then(formatForecastWeather);
+  console.log(formatForecastWeather);
 
   return { ...formattedCurrentWeather, ...formattedForecastWeather };
 };
